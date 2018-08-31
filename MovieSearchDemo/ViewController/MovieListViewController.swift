@@ -36,14 +36,23 @@ class MovieListViewController: UITableViewController {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: loadCellReuseIdentifier)
         
         tableView.tableFooterView = UIView()
-        
+    }
+    
+
+    private func customizeNavBar() {
         let titleImageView = UIImageView(image: #imageLiteral(resourceName: "twitterIcon"))
         titleImageView.frame = CGRect(x: 0, y: 0, width: 34, height: 34)
         titleImageView.contentMode = .scaleAspectFit
         navigationItem.titleView = titleImageView
     }
     
-
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        customizeNavBar()
+    }
+    
+    
     private func setupSearchController() {
         searchController.searchBar.placeholder = "Harry Potter"
         searchController.dimsBackgroundDuringPresentation = true
@@ -133,12 +142,10 @@ extension MovieListViewController: UISearchResultsUpdating, UISearchBarDelegate 
         searchController.resignFirstResponder()
         if let searchText = searchController.searchBar.text {
             fetchMovies(for: searchText)
-            
+            searchBar.placeholder = searchText
         }
         searchController.isActive = false
     }
-    
-    
 }
 
 
@@ -170,6 +177,7 @@ extension MovieListViewController {
         let movieDetails = fetchedMovies[indexPath.row]
         
         cell.textLabel?.text = movieDetails.title
+        cell.detailTextLabel?.text = movieDetails.overview
         cell.imageView?.image = movieDetails.poster
         
         switch movieDetails.posterState {
@@ -221,7 +229,7 @@ extension MovieListViewController {
 
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 300
+        return 175
     }
 
     /*
