@@ -21,7 +21,7 @@ class MovieListViewController: UITableViewController {
     var lastPage = 1
     
     var fetchedMovies = [MovieRecord]()
-    
+    var searchKeyword = "e.g. Harry Potter"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,7 +54,7 @@ class MovieListViewController: UITableViewController {
     
     
     private func setupSearchController() {
-        searchController.searchBar.placeholder = "Harry Potter"
+        searchController.searchBar.placeholder = searchKeyword
         searchController.dimsBackgroundDuringPresentation = true
         searchController.searchBar.sizeToFit()
         searchController.searchResultsUpdater = self
@@ -64,9 +64,9 @@ class MovieListViewController: UITableViewController {
         tableView.tableHeaderView = searchController.searchBar
     }
     
-    func fetchMovies(for keyword: String) {
+    private func fetchMovies() {
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
-        ApiClient.shared.getMovies(for: keyword, page: lastPage) { [unowned self] result in
+        ApiClient.shared.getMovies(for: searchKeyword, page: lastPage) { [unowned self] result in
             DispatchQueue.main.async {
                 UIApplication.shared.isNetworkActivityIndicatorVisible = false
             }
@@ -141,10 +141,12 @@ extension MovieListViewController: UISearchResultsUpdating, UISearchBarDelegate 
         searchBar.resignFirstResponder()
         searchController.resignFirstResponder()
         if let searchText = searchController.searchBar.text {
+            searchKeyword = searchText
             lastPage = 1
             fetchedMovies.removeAll()
-            fetchMovies(for: searchText)
+            fetchMovies()
             searchBar.placeholder = searchText
+            
         }
         searchController.isActive = false
     }
@@ -291,6 +293,17 @@ extension MovieListViewController {
                 let recordToProcess = fetchedMovies[indexPath.row]
                 startOperation(for: recordToProcess, at: indexPath)
             }
+        }
+    }
+    
+    
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // calculates where the user is in the y-axis
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        
+        if offsetY > contentHeight - scrollView.frame.size.height {
+            fetchMovies()
         }
     }
 }
