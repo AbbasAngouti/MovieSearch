@@ -28,23 +28,39 @@ class PosterDownloader: Operation {
         self.movieRecord = movieRecord
     }
     
+    private func loadFaild() {
+        movieRecord.posterState = .failed
+        movieRecord.poster = UIImage(named: "Failed")
+    }
+    
+    private func loadSucceeded(imageData: Data) {
+        movieRecord.poster = UIImage(data: imageData)
+        movieRecord.posterState = .downloaded
+    }
+    
     override func main() {
         if isCancelled {
             return
         }
-        guard let posterUrl = movieRecord.posterUrl else { return }
         
-        guard let imageData = try? Data(contentsOf: posterUrl) else { return }
+        guard let posterUrl = movieRecord.posterUrl else {
+            loadFaild()
+            return
+        }
+        
+        
+        guard let imageData = try? Data(contentsOf: posterUrl) else {
+            loadFaild()
+            return
+        }
         
         if isCancelled {
             return
         }
         if !imageData.isEmpty {
-            movieRecord.poster = UIImage(data: imageData)
-            movieRecord.posterState = .downloaded
+            loadSucceeded(imageData: imageData)
         } else {
-            movieRecord.posterState = .failed
-            movieRecord.poster = UIImage(named: "Failed")
+            loadFaild()
         }
     }
 }
