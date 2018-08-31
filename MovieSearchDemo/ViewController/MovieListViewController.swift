@@ -141,6 +141,8 @@ extension MovieListViewController: UISearchResultsUpdating, UISearchBarDelegate 
         searchBar.resignFirstResponder()
         searchController.resignFirstResponder()
         if let searchText = searchController.searchBar.text {
+            lastPage = 1
+            fetchedMovies.removeAll()
             fetchMovies(for: searchText)
             searchBar.placeholder = searchText
         }
