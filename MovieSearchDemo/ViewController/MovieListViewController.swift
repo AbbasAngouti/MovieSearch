@@ -185,7 +185,6 @@ extension MovieListViewController {
             indicator.stopAnimating()
         case .failed:
             indicator.stopAnimating()
-            cell.textLabel?.text = "Failed to load"
         case .new:
             indicator.startAnimating()
             if !tableView.isDragging && !tableView.isDecelerating {
