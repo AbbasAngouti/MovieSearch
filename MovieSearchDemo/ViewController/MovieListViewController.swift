@@ -11,7 +11,6 @@ import UIKit
 class MovieListViewController: UITableViewController {
 
     private let normalCellReuseIdentifier = "NormalCell"
-    private let loadCellReuseIdentifier = "LoadMoreCell"
     
     var movies: [MovieRecord] = []
     let pendingOperations = PendingOperations()
@@ -28,12 +27,7 @@ class MovieListViewController: UITableViewController {
 
         setupSearchController()
         
-//        setupReachability()
-        
         tableView.backgroundColor = UIColor.white
-        
-        // Register cell classes
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: loadCellReuseIdentifier)
         
         tableView.tableFooterView = UIView()
     }
@@ -133,7 +127,7 @@ class MovieListViewController: UITableViewController {
 extension MovieListViewController: UISearchResultsUpdating, UISearchBarDelegate {
     // MARK: - UISearchResultsUpdating Delegate
     func updateSearchResults(for searchController: UISearchController) {
-        // TODO
+        
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -154,23 +148,15 @@ extension MovieListViewController: UISearchResultsUpdating, UISearchBarDelegate 
 
 
 extension MovieListViewController {
+
     // MARK: - Table view data source
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if fetchedMovies.count != totalResult, fetchedMovies.count > 0 { // have not fetched all photos
-            return fetchedMovies.count  // one for load more cell
-        } else {
-            return fetchedMovies.count
-        }
+        return fetchedMovies.count
     }
 
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        if indexPath.row == fetchedMovies.count { // load-more cell
-//            let cell = tableView.dequeueReusableCell(withIdentifier: loadCellReuseIdentifier, for: indexPath)
-//            return cell
-//        }
-
         let cell = tableView.dequeueReusableCell(withIdentifier: normalCellReuseIdentifier, for: indexPath)
         if cell.accessoryView == nil {
             let indicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
@@ -232,25 +218,15 @@ extension MovieListViewController {
 
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 175
+        return 175 // subject to A|B testing
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
 
 extension MovieListViewController {
     override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         suspendAllOperations()
     }
+    
     
     override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
@@ -259,14 +235,17 @@ extension MovieListViewController {
         }
     }
     
+    
     override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         loadImagesForOnscreenCells()
         resumeAllOperations()
     }
     
+    
     func suspendAllOperations() {
         pendingOperations.posterDownloadQueue.isSuspended = true
     }
+    
     
     func resumeAllOperations() {
         pendingOperations.posterDownloadQueue.isSuspended = false
@@ -306,36 +285,4 @@ extension MovieListViewController {
             fetchMovies()
         }
     }
-}
-
-
-
-
-// to monitor internet reachability
-extension MovieListViewController {
-    
-//    func setupReachability() {
-//        ReachabilityManager.shared.reachabilityChangeBlock =  reachabilityChanged
-//    }
-//
-//
-//    func reachabilityChanged(reachability: Reachability) {
-//        switch reachability.currentReachabilityStatus {
-//        case .notReachable:
-//            if !noConnectionPresented {
-//                self.noConnectionPresented = true
-//                alert = UIAlertController(title: "No Connection",
-//                                          message: "You are not connected to the Internet. Please check you Settings",
-//                                          preferredStyle: .alert)
-//                present(alert!, animated: true, completion: nil)
-//            }
-//            break
-//        default: // .reachableViaWiFi || .reachableViaWWAN
-//            if noConnectionPresented {
-//                self.noConnectionPresented = false
-//                alert?.dismiss(animated: true, completion: nil)
-//            }
-//            break
-//        }
-//    }
 }
