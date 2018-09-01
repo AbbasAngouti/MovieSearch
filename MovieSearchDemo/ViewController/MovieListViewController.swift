@@ -10,7 +10,7 @@ import UIKit
 
 class MovieListViewController: UITableViewController {
 
-    private let normalCellReuseIdentifier = "NormalCell"
+    private let cellReuseIdentifier = "Cell"
     
     var movies: [MovieRecord] = []
     let pendingOperations = PendingOperations()
@@ -30,6 +30,8 @@ class MovieListViewController: UITableViewController {
         tableView.backgroundColor = UIColor.white
         
         tableView.tableFooterView = UIView()
+        
+        tableView.estimatedRowHeight = 175
     }
     
 
@@ -157,7 +159,7 @@ extension MovieListViewController {
 
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: normalCellReuseIdentifier, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath)
         if cell.accessoryView == nil {
             let indicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
             cell.accessoryView = indicator
@@ -250,6 +252,7 @@ extension MovieListViewController {
     func resumeAllOperations() {
         pendingOperations.posterDownloadQueue.isSuspended = false
     }
+    
     
     func loadImagesForOnscreenCells() {
         if let pathsArray = tableView.indexPathsForVisibleRows {

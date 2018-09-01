@@ -15,7 +15,7 @@ class PendingOperations {
     lazy var posterDownloadQueue: OperationQueue =  {
         var queue = OperationQueue()
         queue.name = "Poster Download Queue"
-        queue.maxConcurrentOperationCount = 1 // subject to an A|B testing to find what number works better
+        queue.maxConcurrentOperationCount = 2 // subject to an A|B testing to find what number works better
         return queue
     }()
 }
@@ -28,12 +28,12 @@ class PosterDownloader: Operation {
         self.movieRecord = movieRecord
     }
     
-    private func loadFaild() {
+    private func downloadFaild() {
         movieRecord.posterState = .failed
         movieRecord.poster = UIImage(named: "Failed")
     }
     
-    private func loadSucceeded(imageData: Data) {
+    private func downloadSucceeded(imageData: Data) {
         movieRecord.poster = UIImage(data: imageData)
         movieRecord.posterState = .downloaded
     }
@@ -44,13 +44,12 @@ class PosterDownloader: Operation {
         }
         
         guard let posterUrl = movieRecord.posterUrl else {
-            loadFaild()
+            downloadFaild()
             return
         }
         
-        
         guard let imageData = try? Data(contentsOf: posterUrl) else {
-            loadFaild()
+            downloadFaild()
             return
         }
         
@@ -58,9 +57,9 @@ class PosterDownloader: Operation {
             return
         }
         if !imageData.isEmpty {
-            loadSucceeded(imageData: imageData)
+            downloadSucceeded(imageData: imageData)
         } else {
-            loadFaild()
+            downloadFaild()
         }
     }
 }
