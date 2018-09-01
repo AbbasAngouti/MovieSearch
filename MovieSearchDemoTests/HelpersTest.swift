@@ -24,7 +24,7 @@ class HelpersTest: XCTestCase {
     
     func testEncodeQueryParameters() {
         let keyword = "th!schar*a'g(h)g;n:m@az&g=+$^,a/v b?b%2#[j]"
-        let querystringParameters: [String: AnyObject] = ["api_key": Constants.Keys.APIKey as AnyObject,
+        let querystringParameters = ["api_key": Constants.Keys.APIKey as AnyObject,
                                                           "query": keyword as AnyObject,
                                                           /*"page": 1 as AnyObject*/]
         XCTAssertEqual(Helper.encodeQueryParameters(querystringParameters),
@@ -33,7 +33,7 @@ class HelpersTest: XCTestCase {
     
     
     func testMakeUrl() {
-        let querystringParameters: [String: AnyObject] = ["api_key": Constants.Keys.APIKey as AnyObject,
+        let querystringParameters = ["api_key": Constants.Keys.APIKey as AnyObject,
                                                           "query": "nice movie" as AnyObject,
                                                           /*"page": 1 as AnyObject*/]
         XCTAssertEqual(Helper.makeUrl(baseUrl: Constants.URLs.apiBaseURL, querystringParameters: querystringParameters), URL(string: "https://api.themoviedb.org/3/search/movie?api_key=2a61185ef6a27f400fd92820ad9e8537&query=nice%20movie"))

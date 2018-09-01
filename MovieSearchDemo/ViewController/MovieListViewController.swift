@@ -62,18 +62,21 @@ class MovieListViewController: UITableViewController {
     
     private func fetchMovies() {
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
-        ApiClient.shared.getMovies(for: searchKeyword, page: lastPage) { [unowned self] result in
+        ApiClient.shared.getMovies(for: searchKeyword, page: lastPage) { [weak self] result in
+            guard let strongSelf = self else {
+                return
+            }
             DispatchQueue.main.async {
                 UIApplication.shared.isNetworkActivityIndicatorVisible = false
             }
-            self.lastPage += 1
+            strongSelf.lastPage += 1
             switch result {
             case .error(let error):
-                self.handleError(error: error)
+                strongSelf.handleError(error: error)
                 break
             case .success(let r):
                 if let movies = r as? SearchApiResponse {
-                    self.handleNewMovies(moviesObject: movies)
+                    strongSelf.handleNewMovies(moviesObject: movies)
                 }
                 break
             }
